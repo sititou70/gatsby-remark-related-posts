@@ -1,0 +1,23 @@
+{
+  "name": "gatsby-remark-related-posts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && mv TEMP_dist/*.js . && rm -rf TEMP_dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/kuromoji": "^0.1.0",
+    "@types/natural": "^0.6.3",
+    "compute-cosine-similarity": "^1.0.0",
+    "fs-extra": "^9.0.0",
+    "glob": "^7.1.6",
+    "kuromoji": "^0.1.2",
+    "natural": "^2.1.5",
+    "typescript": "^3.9.3"
+  }
+}
