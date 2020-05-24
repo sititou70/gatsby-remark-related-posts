@@ -1,7 +1,11 @@
 {
   "name": "gatsby-remark-related-posts",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Calculate related posts for each post",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sititou70/gatsby-remark-related-posts.git"
+  },
   "main": "index.js",
   "scripts": {
     "build": "tsc && mv TEMP_dist/*.js . && rm -rf TEMP_dist",

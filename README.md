@@ -1,5 +1,7 @@
 # gatsby-remark-related-posts
 
+[![npm version](https://badge.fury.io/js/gatsby-remark-related-posts.svg)](https://badge.fury.io/js/gatsby-remark-related-posts)
+
 Calculate related posts for each post using [tf–idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf).
 
 ## Installation
