@@ -98,7 +98,12 @@ const getTextFromMarkdown = (markdown: string): string =>
 const getKuromojiTokenizer = async (): Promise<KuromojiTokenizer> =>
   new Promise((resolve, reject) => {
     kuromoji
-      .builder({ dicPath: path.join(__dirname, 'node_modules/kuromoji/dict') })
+      .builder({
+        dicPath: path.join(
+          path.dirname(require.resolve('kuromoji')),
+          '../dict'
+        ),
+      })
       .build(function (err, tokenizer) {
         if (err) reject();
         resolve(tokenizer);
