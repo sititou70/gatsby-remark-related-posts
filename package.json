@@ -1,16 +1,23 @@
 {
   "name": "gatsby-remark-related-posts",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Calculate related posts for each post",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && mv TEMP_dist/*.js . && rm -rf TEMP_dist"
+    "build": "tsc && mv TEMP_dist/*.js . && rm -rf TEMP_dist",
+    "prepublish": "npm run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "gatsby",
+    "remark",
+    "related",
+    "post"
+  ],
+  "author": "sititou70",
+  "license": "MIT",
   "dependencies": {
     "@types/fs-extra": "^9.0.1",
+    "@types/glob": "^7.1.1",
     "@types/kuromoji": "^0.1.0",
     "@types/natural": "^0.6.3",
     "compute-cosine-similarity": "^1.0.0",
@@ -19,5 +26,8 @@
     "kuromoji": "^0.1.2",
     "natural": "^2.1.5",
     "typescript": "^3.9.3"
+  },
+  "peerDependencies": {
+    "gatsby": "^2.0.0"
   }
 }

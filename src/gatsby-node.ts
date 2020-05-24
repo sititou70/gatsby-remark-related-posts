@@ -158,7 +158,7 @@ exports.onPreBootstrap = async (_: any, user_option: Partial<Option>) => {
       .map((x) => ({ ...x, tfidf: (x as Term).tf * (x as Term).idf }))
       .sort((x, y) => y.tfidf - x.tfidf)
   );
-  // DEBUG: print terms
+  //DEBUG: print terms
   //doc_terms.forEach((x, i) =>
   //  console.log(
   //    docs[i].id,
