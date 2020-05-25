@@ -66,6 +66,8 @@ query {
 }
 ```
 
+These paths are sorting by similarity. In this example, first "/home/user/blog/posts/markdown4.md" is the most related to "/home/user/blog/posts/markdown1.md".
+
 ## Licence
 
 MIT
