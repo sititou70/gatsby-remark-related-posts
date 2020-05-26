@@ -1,7 +1,7 @@
 {
   "name": "gatsby-remark-related-posts",
-  "version": "0.0.6",
-  "description": "Calculate related posts for each post",
+  "version": "0.0.7",
+  "description": "Calculate the similarity between posts and make it avairable from graphql.",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/sititou70/gatsby-remark-related-posts.git"
