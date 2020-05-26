@@ -1,6 +1,6 @@
 {
   "name": "gatsby-remark-related-posts",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Calculate related posts for each post",
   "repository": {
     "type": "git",
@@ -13,9 +13,11 @@
   },
   "keywords": [
     "gatsby",
+    "gatsby-plugin",
     "remark",
     "related",
-    "post"
+    "post",
+    "tf-idf"
   ],
   "author": "sititou70",
   "license": "MIT",
