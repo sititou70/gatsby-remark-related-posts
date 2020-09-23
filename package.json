@@ -1,6 +1,6 @@
 {
   "name": "gatsby-remark-related-posts",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Calculate the similarity between posts and make it avairable from graphql.",
   "repository": {
     "type": "git",
@@ -22,19 +22,18 @@
   "author": "sititou70",
   "license": "MIT",
   "dependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/glob": "^7.1.3",
+    "@types/kuromoji": "^0.1.0",
+    "@types/natural": "^2.1.0",
     "compute-cosine-similarity": "^1.0.0",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "kuromoji": "^0.1.2",
-    "natural": "^2.1.5"
+    "natural": "^2.1.5",
+    "typescript": "^4.0.3"
   },
-  "devDependencies": {
-    "@types/fs-extra": "^9.0.1",
-    "@types/glob": "^7.1.1",
-    "@types/kuromoji": "^0.1.0",
-    "@types/natural": "^0.6.3",
-    "typescript": "^3.9.3"
-  },
+  "devDependencies": {},
   "peerDependencies": {
     "gatsby": "^2.0.0"
   }
