@@ -199,6 +199,6 @@ exports.onCreateNode = ({
   createNodeField({
     node,
     name: 'relatedFileAbsolutePaths',
-    value: related_paths,
+    value: node,
   });
 };
