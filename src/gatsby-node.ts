@@ -198,40 +198,28 @@ exports.onPreBootstrap = async (_: any, user_option: Partial<Option>) => {
   logline('bow vectors generated, dimention: ', all_keywords.size);
 };
 
-const path2node: Map<string, GatsbyNode> = new Map();
 exports.onCreateNode = ({
   node,
   actions,
-  getNodes,
 }: {
   node: GatsbyNode;
   actions: any;
-  getNodes: () => GatsbyNode[];
 }) => {
   const { createNodeField } = actions;
 
   if (bow_vectors === null) return;
   if (node.internal.type !== 'MarkdownRemark') return;
 
-  // setup markdown remark nodes map
-  if (path2node.size === 0) {
-    getNodes().forEach((node) => {
-      if (node.internal.type !== 'MarkdownRemark') return;
-      path2node.set(node.fileAbsolutePath, node);
-    });
-  }
-
-  // create node field
-  const related_nodes = getRelatedPosts(node.fileAbsolutePath, bow_vectors)
-    .slice(1)
-    .map((path) => path2node.get(path))
-    .filter((x): x is GatsbyNode => x !== undefined);
+  const related_paths = getRelatedPosts(
+    node.fileAbsolutePath,
+    bow_vectors
+  ).slice(1);
   // DEBUG: print related posts
   // console.log(node.fileAbsolutePath, related_paths);
 
   createNodeField({
     node,
-    name: 'relatedMarkdownRemarks',
-    value: related_nodes,
+    name: 'relatedFileAbsolutePaths',
+    value: related_paths,
   });
 };

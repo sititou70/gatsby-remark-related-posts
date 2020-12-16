@@ -29,22 +29,16 @@ In your `gatsby-config.js`:
 | `posts_dir` | directory that includes your markdown files.                                 |
 | `doc_lang`  | ISO 639-1 language code of your post. This supports `en` and `ja` currently. |
 
-The plugin creates a new `relatedMarkdownRemarkNodes` field on each `MarkdownRemark` node, like this:
+This creates a new `relatedFileAbsolutePaths` field on each `MarkdownRemark` node, like this:
 
 ```javascript
 // query
-{
+query {
   allMarkdownRemark {
     nodes {
-      frontmatter {
-        title
-      }
+      fileAbsolutePath
       fields {
-        relatedMarkdownRemarks {
-          frontmatter {
-            title
-          }
-        }
+        relatedFileAbsolutePaths
       }
     }
   }
@@ -58,30 +52,23 @@ The plugin creates a new `relatedMarkdownRemarkNodes` field on each `MarkdownRem
     "allMarkdownRemark": {
       "nodes": [
         {
-          "frontmatter": {
-            "title": "New Beginnings"
-          },
+          "fileAbsolutePath": "/home/user/blog/posts/markdown1.md",
           "fields": {
-            "relatedMarkdownRemarks": [
-              {
-                "frontmatter": {
-                  "title": "Hello World"
-                }
-              },
-              {
-                "frontmatter": {
-                  "title": "My Second Post!"
-                }
-              }
+            "relatedFileAbsolutePaths": [
+              "/home/user/blog/posts/markdown4.md",
+              "/home/user/blog/posts/markdown2.md",
+              "/home/user/blog/posts/markdown3.md"
             ]
           }
         },
         ...
+      ]
+    }
+  }
+}
 ```
 
-These MarkdownRemark nodes are sorting by similarity. In this example, first "Hello World" post is the most related to "New Beginnings" post.
-
-see also: [sample repo](https://github.com/sititou70/gatsby-remark-related-posts-example)
+These paths are sorting by similarity. In this example, first "/home/user/blog/posts/markdown4.md" is the most related to "/home/user/blog/posts/markdown1.md".
 
 ## Licence
 
