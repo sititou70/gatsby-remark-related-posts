@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/gatsby-remark-related-posts.svg)](https://badge.fury.io/js/gatsby-remark-related-posts)
 
-Calculate the similarity between posts and make it avairable from graphql.
+Calculate the similarity between posts and make it available from graphql.
 
 To calculate the similarity, this plugin using [tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) and [Cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity).
 
