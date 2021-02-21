@@ -3,17 +3,12 @@ import glob from 'glob';
 import kuromoji from 'kuromoji';
 import { TfIdf, TfIdfTerm } from 'natural';
 import path from 'path';
+import { GatsbyNode } from 'gatsby';
 
 const computeCosineSimilarity = require('compute-cosine-similarity');
 
 // types
 type BowVector = number[];
-type GatsbyNode = {
-  id: string;
-  internal: { type: string; content: string };
-  frontmatter: { title: string };
-  fileAbsolutePath: string;
-};
 type KuromojiTokenizer = kuromoji.Tokenizer<kuromoji.IpadicFeatures>;
 type Option = {
   posts_dir: string;
@@ -133,7 +128,10 @@ const getSpaceSeparatedDoc: {
 // gatsby api
 let bow_vectors: Map<string, BowVector> | null = null;
 
-exports.onPreBootstrap = async (_: any, user_option: Partial<Option>) => {
+export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
+  _,
+  user_option
+) => {
   const option: Option = {
     ...default_option,
     ...user_option,
@@ -198,20 +196,14 @@ exports.onPreBootstrap = async (_: any, user_option: Partial<Option>) => {
   logline('bow vectors generated, dimention: ', all_keywords.size);
 };
 
-exports.onCreateNode = ({
-  node,
-  actions,
-}: {
-  node: GatsbyNode;
-  actions: any;
-}) => {
+export const onCreateNode: GatsbyNode['onCreateNode'] = ({ node, actions }) => {
   const { createNodeField } = actions;
 
   if (bow_vectors === null) return;
   if (node.internal.type !== 'MarkdownRemark') return;
 
   const related_paths = getRelatedPosts(
-    node.fileAbsolutePath,
+    node.fileAbsolutePath as string,
     bow_vectors
   ).slice(1);
   // DEBUG: print related posts
