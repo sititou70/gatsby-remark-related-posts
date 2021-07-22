@@ -22,11 +22,11 @@
   "author": "sititou70",
   "license": "MIT",
   "dependencies": {
-    "compute-cosine-similarity": "npm:undefined@*",
-    "fs-extra": "npm:undefined@*",
-    "glob": "npm:undefined@*",
-    "kuromoji": "npm:undefined@*",
-    "natural": "npm:undefined@*"
+    "compute-cosine-similarity": "^1.0.0",
+    "fs-extra": "^8.1.0",
+    "glob": "^7.1.7",
+    "kuromoji": "^0.1.2",
+    "natural": "^5.0.3"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.11",
