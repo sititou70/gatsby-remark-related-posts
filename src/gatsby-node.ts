@@ -87,6 +87,9 @@ const logline = (...msg: any): void =>
 const getTextFromMarkdown = (markdown: string): string =>
   markdown
     .replace(/```[\s\S]+?```/g, '')
+    .replace(/---[\s\S]+?---/g, '')
+    .replace(/\$[\s\S]+?\$/g, '')
+    .replace(/\$\$[\s\S]+?\$\$/g, '')
     .replace(/<.+?>/g, '')
     .replace(/http[^ ]+/g, '')
     .replace(/[\#\!\(\)\*\_\[\]\|\=\>\+\`\:\-]/g, '');
@@ -107,7 +110,6 @@ const getKuromojiTokenizer = async (): Promise<KuromojiTokenizer> =>
   });
 
 let kuromoji_tokenizer: KuromojiTokenizer | null = null;
-const ja_tokendetail_whitelist = ['一般', '固有名詞'];
 const getSpaceSeparatedDoc: {
   [key: string]: (doc: string) => Promise<string[]>;
 } = {
@@ -120,7 +122,11 @@ const getSpaceSeparatedDoc: {
 
     return kuromoji_tokenizer
       .tokenize(doc)
-      .filter((x) => ja_tokendetail_whitelist.indexOf(x.pos_detail_1) !== -1)
+      .filter(
+        (x) =>
+          x.pos === '名詞' &&
+          ['一般', '固有名詞'].indexOf(x.pos_detail_1) !== -1
+      )
       .map((x) => (x.basic_form !== '*' ? x.basic_form : x.surface_form));
   },
 };
