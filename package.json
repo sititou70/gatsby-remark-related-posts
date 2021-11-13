@@ -1,7 +1,7 @@
 {
   "name": "gatsby-remark-related-posts",
-  "version": "1.0.8",
-  "description": "Calculate the similarity between posts and make it avairable from graphql.",
+  "version": "2.0.0",
+  "description": "Calculate the similarity between posts by tf-idf and Cosine similarity.",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/sititou70/gatsby-remark-related-posts.git"
@@ -23,19 +23,15 @@
   "license": "MIT",
   "dependencies": {
     "compute-cosine-similarity": "^1.0.0",
-    "fs-extra": "^10.0.0",
-    "glob": "^7.1.7",
     "kuromoji": "^0.1.2",
     "natural": "^5.1.1"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.12",
-    "@types/glob": "^7.1.4",
     "@types/kuromoji": "^0.1.1",
     "@types/natural": "^5.0.0",
     "typescript": "^4.4.3"
   },
   "peerDependencies": {
-    "gatsby": "^2.0.0 || ^3.0.0"
+    "gatsby": "^2.0.0 || ^3.0.0 || ^4.0.0"
   }
 }

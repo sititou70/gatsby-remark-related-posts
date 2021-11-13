@@ -1,5 +1,3 @@
-import fs from 'fs-extra';
-import glob from 'glob';
 import kuromoji from 'kuromoji';
 import { TfIdf, TfIdfTerm } from 'natural';
 import path from 'path';
@@ -11,16 +9,18 @@ const computeCosineSimilarity = require('compute-cosine-similarity');
 type BowVector = number[];
 type KuromojiTokenizer = kuromoji.Tokenizer<kuromoji.IpadicFeatures>;
 type Option = {
-  posts_dir: string;
   doc_lang: string;
-  bow_keyword_extracting_nums: number;
+  target_node: 'MarkdownRemark' | 'StrapiArticle';
+  getMarkdown: (node: any) => string;
+  each_bow_size: number;
 };
 
 // settings
 const default_option: Option = {
-  posts_dir: process.cwd(),
   doc_lang: 'en',
-  bow_keyword_extracting_nums: 30,
+  target_node: 'MarkdownRemark',
+  getMarkdown: (node) => node.rawMarkdownBody,
+  each_bow_size: 30,
 };
 
 // utils
@@ -81,9 +81,6 @@ const getRelatedPosts = (
     .map((x) => x[0]);
 };
 
-const logline = (...msg: any): void =>
-  console.log('[gatsby-remark-related-posts] ', ...msg);
-
 const getTextFromMarkdown = (markdown: string): string =>
   markdown
     .replace(/```[\s\S]+?```/g, '')
@@ -132,10 +129,8 @@ const getSpaceSeparatedDoc: {
 };
 
 // gatsby api
-let bow_vectors: Map<string, BowVector> | null = null;
-
-export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
-  _,
+export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] = (
+  { actions },
   user_option
 ) => {
   const option: Option = {
@@ -143,16 +138,29 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
     ...user_option,
   };
 
-  const markdown_paths = glob.sync(path.join(option.posts_dir, '/**/*.md'));
+  actions.createTypes(`
+    type related${option.target_node}s implements Node {
+      posts: [${option.target_node}]
+    }
+  `);
+};
 
-  const docs: { id: string; text: string }[] = await Promise.all(
-    markdown_paths.map(async (x) => ({
-      id: x,
-      text: await (await fs.readFile(x)).toString(),
-    }))
-  );
+export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
+  { actions, getNode, getNodesByType, createNodeId, reporter },
+  user_option
+) => {
+  const option: Option = {
+    ...default_option,
+    ...user_option,
+  };
+  const nodes = getNodesByType(option.target_node);
 
   // add documents to tfidf
+  const docs = nodes.map((node) => ({
+    id: node.id,
+    text: option.getMarkdown(node),
+  }));
+
   const tfidf = new TfIdf();
   for (let doc of docs) {
     tfidf.addDocument(
@@ -182,13 +190,13 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
   const tfidf_map_for_each_doc: Map<string, number>[] = [];
   doc_terms.forEach((x, i) => {
     tfidf_map_for_each_doc[i] = new Map<string, number>();
-    x.slice(0, option.bow_keyword_extracting_nums).forEach((x) => {
+    x.slice(0, option.each_bow_size).forEach((x) => {
       all_keywords.add(x.term);
       tfidf_map_for_each_doc[i].set(x.term, x.tfidf);
     });
   });
   //// generate vectors
-  bow_vectors = new Map<string, BowVector>();
+  const bow_vectors = new Map<string, BowVector>();
   docs.forEach((x, i) => {
     if (bow_vectors === null) return;
     bow_vectors.set(
@@ -198,26 +206,25 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
         .map((x) => (x === undefined ? 0 : x))
     );
   });
+  reporter.info(
+    `[related-posts] bow vectors generated, dimention: ${all_keywords.size}`
+  );
 
-  logline('bow vectors generated, dimention: ', all_keywords.size);
-};
+  // create related nodes
+  nodes.forEach((node) => {
+    const related_nodes = getRelatedPosts(node.id, bow_vectors)
+      .slice(1)
+      .map((id) => getNode(id));
+    const digest = `${node.id} >>> related${option.target_node}s`;
 
-export const onCreateNode: GatsbyNode['onCreateNode'] = ({ node, actions }) => {
-  const { createNodeField } = actions;
-
-  if (bow_vectors === null) return;
-  if (node.internal.type !== 'MarkdownRemark') return;
-
-  const related_paths = getRelatedPosts(
-    node.fileAbsolutePath as string,
-    bow_vectors
-  ).slice(1);
-  // DEBUG: print related posts
-  // console.log(node.fileAbsolutePath, related_paths);
-
-  createNodeField({
-    node,
-    name: 'relatedFileAbsolutePaths',
-    value: related_paths,
+    actions.createNode({
+      id: createNodeId(digest),
+      parent: node.id,
+      internal: {
+        type: `related${option.target_node}s`,
+        contentDigest: digest,
+      },
+      posts: related_nodes,
+    });
   });
 };
