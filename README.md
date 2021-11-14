@@ -1,78 +1,114 @@
-# gatsby-remark-related-posts
+# gatsby-remark-related-posts v2
 
 [![npm version](https://badge.fury.io/js/gatsby-remark-related-posts.svg)](https://badge.fury.io/js/gatsby-remark-related-posts)
 
-Calculate the similarity between posts and make it available from graphql.
-
-To calculate the similarity, this plugin using [tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) and [Cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity).
+Calculate the similarity between posts by [tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) and [Cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity).
 
 ## Installation
 
 `npm i --save gatsby-remark-related-posts`
 
+## Example projects
+
+- with Markdown: [gatsby-remark-related-posts-example](https://github.com/sititou70/gatsby-remark-related-posts-example)
+- with Mdx: [gatsby-remark-related-posts-example-mdx](https://github.com/sititou70/gatsby-remark-related-posts-example-mdx)
+- with Strapi: [gatsby-remark-related-posts-example-strapi](https://github.com/sititou70/gatsby-remark-related-posts-example-strapi)
+
 ## Usage
 
-In your `gatsby-config.js`:
-
 ```javascript
-{
-  resolve: "gatsby-remark-related-posts",
-  options: {
-    posts_dir: `${__dirname}/posts`,
-    doc_lang: "ja",
-  },
-},
+// In your gatsby-config.js
+plugins: [
+  // ... other plugins
+  `gatsby-remark-related-posts`,
+  // ... other plugins
+];
 ```
 
-| option      | description                                                                  |
-| :---------- | :--------------------------------------------------------------------------- |
-| `posts_dir` | directory that includes your markdown files.                                 |
-| `doc_lang`  | ISO 639-1 language code of your post. This supports `en` and `ja` currently. |
+or
 
-This creates a new `relatedFileAbsolutePaths` field on each `MarkdownRemark` node, like this:
+```javascript
+// In your gatsby-config.js
+plugins: [
+  // ... other plugins
+  {
+    resolve: 'gatsby-remark-related-posts',
+    options: {
+      doc_lang: 'en', // optional
+      target_node: 'MarkdownRemark', // optional
+      getMarkdown: (node) => node.rawMarkdownBody, // optional
+      each_bow_size: 30, // optional
+    },
+  },
+  // ... other plugins
+];
+```
+
+| option          | type                                                                     | description                                                                                         |
+| :-------------- | :----------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| `doc_lang`      | "en" \| "ja" (default: "en")                                             | ISO 639-1 language code of your post.                                                               |
+| `target_node`   | "MarkdownRemark" \| "Mdx" \| "StrapiArticle" (default: "MarkdownRemark") | Gatsby node name to calculate similarity.                                                           |
+| `getMarkdown`   | Function: (node) => string (default: (node) => node.rawMarkdownBody)     | Function to get Markdown text from Gatsby node.                                                     |
+| `each_bow_size` | number (default: 30)                                                     | Adjust the size of the Bow vector. If you encounter problems during build, set it to a small value. |
+
+## Querying Example
 
 ```javascript
 // query
-query {
-  allMarkdownRemark {
-    nodes {
-      fileAbsolutePath
+`
+{
+  relatedMarkdownRemarks(parent: {id: {eq: $markdownRemarksId}}) {
+    posts {
+      frontmatter {
+        title
+      }
       fields {
-        relatedFileAbsolutePaths
+        slug
       }
     }
   }
 }
+`;
 ```
 
 ```javascript
 // result
 {
   "data": {
-    "allMarkdownRemark": {
-      "nodes": [
+    "relatedMarkdownRemarks": {
+      "posts": [
         {
-          "fileAbsolutePath": "/home/user/blog/posts/markdown1.md",
+          "frontmatter": {
+            "title": "English language"
+          },
           "fields": {
-            "relatedFileAbsolutePaths": [
-              "/home/user/blog/posts/markdown4.md",
-              "/home/user/blog/posts/markdown2.md",
-              "/home/user/blog/posts/markdown3.md"
-            ]
+            "slug": "/11/"
           }
         },
-        ...
+        {
+          "frontmatter": {
+            "title": "Japanese language"
+          },
+          "fields": {
+            "slug": "/12/"
+          }
+        },
+        {
+          "frontmatter": {
+            "title": "Spanish language"
+          },
+          "fields": {
+            "slug": "/13/"
+          }
+        },
+        // ...
       ]
     }
-  }
+  },
 }
 ```
 
-These paths are sorting by similarity. In this example, first "/home/user/blog/posts/markdown4.md" is the most related to "/home/user/blog/posts/markdown1.md".
-
-In addition, to see all the sample code for displaying related posts, please also refer to [gatsby-remark-related-posts-example](https://github.com/sititou70/gatsby-remark-related-posts-example).
-
-See also [this blog post(Japanese)](https://sititou70.github.io/Gatsby%E8%A3%BD%E3%83%96%E3%83%AD%E3%82%B0%E3%81%A7%E8%87%AA%E7%84%B6%E8%A8%80%E8%AA%9E%E5%87%A6%E7%90%86%E3%81%97%E3%81%A6%E9%96%A2%E9%80%A3%E8%A8%98%E4%BA%8B%E3%82%92%E8%A1%A8%E7%A4%BA%E3%81%99%E3%82%8B/) for the motivation that created this plugin and internal algorithms.
+`posts` is array of `MarkdownRemark` ordered by related to `$markdownRemarksId`.
 
 ## Licence
 
