@@ -87,6 +87,7 @@ const getTextFromMarkdown = (markdown: string): string =>
     .replace(/---[\s\S]+?---/g, '')
     .replace(/\$[\s\S]+?\$/g, '')
     .replace(/\$\$[\s\S]+?\$\$/g, '')
+    .replace(/^\|.*\|$/gm, '')
     .replace(/<.+?>/g, '')
     .replace(/http[^ ]+/g, '')
     .replace(/[\#\!\(\)\*\_\[\]\|\=\>\+\`\:\-]/g, '');
@@ -129,21 +130,19 @@ const getSpaceSeparatedDoc: {
 };
 
 // gatsby api
-export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] = (
-  { actions },
-  user_option
-) => {
-  const option: Option = {
-    ...default_option,
-    ...user_option,
-  };
+export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] =
+  ({ actions }, user_option) => {
+    const option: Option = {
+      ...default_option,
+      ...user_option,
+    };
 
-  actions.createTypes(`
+    actions.createTypes(`
     type related${option.target_node}s implements Node {
       posts: [${option.target_node}]
     }
   `);
-};
+  };
 
 export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
   { actions, getNode, getNodesByType, createNodeId, reporter },
