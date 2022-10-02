@@ -2,6 +2,8 @@ import kuromoji from 'kuromoji';
 import { TfIdf, TfIdfTerm } from 'natural';
 import path from 'path';
 import { GatsbyNode } from 'gatsby';
+import crypto from 'crypto';
+import { kStringMaxLength } from 'buffer';
 
 const computeCosineSimilarity = require('compute-cosine-similarity');
 
@@ -24,6 +26,11 @@ const default_option: Option = {
 };
 
 // utils
+const md5 = (str: string): string => {
+  const md5 = crypto.createHash('md5');
+  return md5.update(str, 'binary').digest('hex');
+};
+
 const calcVectorSimilarity = (v1: BowVector, v2: BowVector): number => {
   if (v1.length !== v2.length)
     throw new Error("Both vector's size must be equal");
@@ -145,7 +152,7 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
   };
 
 export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
-  { actions, getNode, getNodesByType, createNodeId, reporter },
+  { actions, getNode, getNodesByType, createNodeId, reporter, cache },
   user_option
 ) => {
   const option: Option = {
@@ -162,9 +169,19 @@ export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
 
   const tfidf = new TfIdf();
   for (let doc of docs) {
-    tfidf.addDocument(
-      await getSpaceSeparatedDoc[option.doc_lang](getTextFromMarkdown(doc.text))
+    const key = `related-posts-ssd-${md5(doc.text)}`;
+
+    const cached_ssd = await cache.get(key);
+    if (cached_ssd !== undefined) {
+      tfidf.addDocument(cached_ssd);
+      continue;
+    }
+
+    const ssd = await getSpaceSeparatedDoc[option.doc_lang](
+      getTextFromMarkdown(doc.text)
     );
+    tfidf.addDocument(ssd);
+    await cache.set(key, ssd);
   }
 
   // generate bow vectors
