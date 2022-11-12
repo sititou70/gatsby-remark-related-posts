@@ -1,6 +1,6 @@
 {
   "name": "gatsby-remark-related-posts",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Calculate the similarity between posts by tf-idf and Cosine similarity.",
   "repository": {
     "type": "git",
